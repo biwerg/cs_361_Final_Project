@@ -5,6 +5,10 @@ body {
     color: #d8dee9;
 }
 
+input:focus{
+    outline: none;
+}
+
 header {
     display: flex;
     flex-direction: row;
@@ -22,7 +26,15 @@ header {
     margin-right: 5vw;
 }
 
-.about-link button {
+.search-bar{
+    height: 44px;
+    border-radius: 6px;
+    border-width: 0;
+    box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset,rgba(50, 50, 93, .1) 0 2px 5px 0,rgba(0, 0, 0, .07) 0 1px 1px 0;
+    line-height: 1.15;
+}
+
+.about-link button, .content button {
   appearance: button;
   backface-visibility: hidden;
   background-color: #5e81ac;
@@ -39,7 +51,7 @@ header {
   margin: 12px 0 0;
   outline: none;
   overflow: hidden;
-  padding: 0 25px;
+  padding: 0 15px;
   position: relative;
   text-align: center;
   text-transform: none;
@@ -48,15 +60,15 @@ header {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  width: 100%;
 }
 
 .about-link button:disabled {
   cursor: default;
 }
 
-.about-link button:focus {
-  box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset, rgba(50, 50, 93, .2) 0 6px 15px 0, rgba(0, 0, 0, .1) 0 2px 2px 0, rgba(50, 151, 211, .3) 0 0 0 4px;
+.about-link button:hover, .content button:hover {
+    background-color: #d8dee9;
+    color: #5e81ac;
 }
 
 .content{
@@ -77,6 +89,7 @@ header {
     background-color: red;
     border-radius: 30px;
     border: 2px solid gray;
+    margin: 50px;
 }
 
 .toggle:after {
