@@ -29,3 +29,9 @@ document.addEventListener("DOMContentLoaded", () =>{
         console.log(sessionStorage.getItem("city"));
     }
 });
+
+let searchBar = document.getElementById("search-bar");
+
+searchBar.addEventListener('input', e => {
+    
+});
