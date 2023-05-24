@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () =>{
-    if(sessionStorage.getItem("city") === null){
+    if(!sessionStorage.getItem("city")){
         //gets coordinates of user
         navigator.geolocation.getCurrentPosition(position => {
             let xhr = new XMLHttpRequest();
@@ -28,10 +28,4 @@ document.addEventListener("DOMContentLoaded", () =>{
     }else{
         console.log(sessionStorage.getItem("city"));
     }
-});
-
-let searchBar = document.getElementById("search-bar");
-
-searchBar.addEventListener('input', e => {
-    
 });
