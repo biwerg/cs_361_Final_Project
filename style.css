@@ -93,12 +93,12 @@ header {
     padding: 20px;
 }
 
-.site-title a{
+#site-title a{
     text-decoration: none;
     color:#d8dee9;
 }
 
-.unit-toggle {
+.toggle-switch {
     position: relative;
     display: inline-block;
     float: right;
@@ -106,7 +106,7 @@ header {
     height: 26px;
 }
 
-.unit-toggle input {
+.toggle-switch input {
     opacity: 0;
     width: 0;
     height: 0;
@@ -166,6 +166,7 @@ p {
     padding: 20px;
     border-radius: 3px;
     background-color: #5e81ac;
+    color: #d8dee9;
 }
 
 .sidebar h2 {

@@ -1,3 +1,6 @@
+var unitToggle = document.getElementById("unit-toggle");
+var themeToggle = document.getElementById("theme-toggle");
+
 document.addEventListener("DOMContentLoaded", () =>{
     if(!sessionStorage.getItem("city")){
         //gets coordinates of user
@@ -28,4 +31,69 @@ document.addEventListener("DOMContentLoaded", () =>{
     }else{
         console.log(sessionStorage.getItem("city"));
     }
+
+    //Load user settings
+    if(!sessionStorage.getItem("units")){ //if units is not set, set to imperial
+        sessionStorage.setItem("units", "imperial");
+        unitToggle.checked = false;
+        console.log(sessionStorage.getItem("units"));
+    }else{ //if units is set, load user settings
+        if(sessionStorage.getItem("units") == "imperial"){
+            unitToggle.checked = false;
+        }else if (sessionStorage.getItem("units") == "metric"){
+            unitToggle.checked = true;
+        }
+        console.log(sessionStorage.getItem("units"));
+    }
+
+    if(!sessionStorage.getItem("theme")){ //if theme is not set, set to light
+        sessionStorage.setItem("theme", "light");
+        themeToggle.checked = false;
+        changeTheme();
+        console.log(sessionStorage.getItem("theme"));
+    }else{ //if units is set, load user settings
+        if(sessionStorage.getItem("theme") == "light"){
+            themeToggle.checked = false;
+            changeTheme();
+        }else if (sessionStorage.getItem("theme") == "dark"){
+            themeToggle.checked = true;
+            changeTheme();
+        }
+        console.log(sessionStorage.getItem("theme"));
+    }
 });
+
+unitToggle.addEventListener("click", () => { //update units
+    if (unitToggle.checked){ //if checked, set to metric
+        sessionStorage.setItem("units", "metric");
+        console.log(sessionStorage.getItem("units"));
+    }else{ //if not checked, set to imperial
+        sessionStorage.setItem("units", "imperial");
+        console.log(sessionStorage.getItem("units"));
+    }
+});
+
+themeToggle.addEventListener("click", () => {
+    if (themeToggle.checked){
+        sessionStorage.setItem("theme", "dark");
+        console.log(sessionStorage.getItem("theme"));
+    }else{
+        sessionStorage.setItem("theme", "light");
+        console.log(sessionStorage.getItem("theme"));
+    }
+    changeTheme();
+});
+
+function changeTheme(){
+    if(sessionStorage.getItem("theme") == "dark"){
+        document.getElementById("body").style.backgroundColor = "#4c566a";
+        document.getElementById("body").style.color = "#d8dee9";
+        var siteTitle = document.getElementById("site-title");
+        siteTitle.getElementsByTagName("a")[0].style.color = "#d8dee9";
+    }else{
+        document.getElementById("body").style.backgroundColor = "#d8dee9";
+        document.getElementById("body").style.color = "#4c566a";
+        var siteTitle = document.getElementById("site-title");
+        siteTitle.getElementsByTagName("a")[0].style.color = "#4c566a";
+    }
+}
