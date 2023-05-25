@@ -1,9 +1,6 @@
 var unitToggle = document.getElementById("unit-toggle");
 var themeToggle = document.getElementById("theme-toggle");
-var currentTemp = 32;
 var weatherAPIKey = "PPBWQVX6NDHXD76VNQLDDW3TA";
-var currentEpoch = new Date().getTime();
-var forecastEpoch = currentEpoch + 259200;
 var searchButton = document.getElementById("search-button");
 
 document.addEventListener("DOMContentLoaded", () =>{
@@ -67,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () =>{
         }
         console.log(sessionStorage.getItem("theme"));
     }
+    getWeather();
     changeTheme();
     changeTemp();
 });
@@ -109,28 +107,49 @@ function changeTheme(){
 
 function changeTemp(){
     if(sessionStorage.getItem("units") == "metric"){
-        document.getElementById("temp").innerHTML = currentTemp + " °C";
+        document.getElementById("temp").innerHTML = Math.round((sessionStorage.getItem("currentTemp") - 32) * (5/9)) + " °C";
     }else{
-        document.getElementById("temp").innerHTML = Math.round((currentTemp * 9/5) + 32) + " °F";
+        document.getElementById("temp").innerHTML = Math.round(sessionStorage.getItem("currentTemp")) + " °F";
     }
 }
 
-function getWeather(lat, lon){
+function getWeather(){
+    let currentEpoch = Math.round((new Date()).getTime() / 1000.0);
+    let forecastEpoch = currentEpoch + 259200;
+    let currentEpochHour = currentEpoch - (currentEpoch % 3600);
     console.log("getWeather() called");
     let xhr = new XMLHttpRequest();
     let city = sessionStorage.getItem("city");
     let state = sessionStorage.getItem("state");
     let country = sessionStorage.getItem("country");
-    xhr.open('GET', "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+ city + "," + state + "," + country + "/" + currentEpoch + "/" + forecastEpoch + "?&key=" + weatherAPIKey, true);
+    //Remove all spaces from location
+    while(city.includes(" ")){
+        city = city.replace(" ", "");
+    }
+    while(state.includes(" ")){
+        state = state.replace(" ", "");
+    }
+    while(country.includes(" ")){
+        country = country.replace(" ", "");
+    }
+
+    var apiFetch = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+ city + "," + state + "," + country + "/" + currentEpoch + "/" + forecastEpoch + "?&key=" + weatherAPIKey;
+    console.log(apiFetch);
+    xhr.open('GET', apiFetch, true);
     xhr.send();
 
     xhr.onreadystatechange = e => {
         if(xhr.readyState == 4 && xhr.status == 200){
             let response = JSON.parse(xhr.responseText);
-            currentTemp = response.days[0].temp;
+            // Parse response for current temperature of the current hour
+            for(var i = 0; i < 24; i++){
+                if(response.days[0].hours[i].datetimeEpoch == currentEpochHour){
+                    sessionStorage.setItem("currentTemp", response.days[0].hours[i].temp); //Stored in F
+                }
+            }
         }
     }
-    console.log(currentTemp);
+    console.log(sessionStorage.getItem("currentTemp"));
     changeTemp();
 }
 
