@@ -82,8 +82,15 @@ header {
 }
 
 .content{
+    display: flex;
+}
+
+.display{
+    display: block;
     text-align: center;
-    margin: 100px;
+    flex-grow: 1;
+    margin: 10px 10px auto 10px;
+    padding: 20px;
 }
 
 .site-title a{
@@ -91,27 +98,58 @@ header {
     color:#d8dee9;
 }
 
-.toggle {
+.unit-toggle {
     position: relative;
     display: inline-block;
-    width: 75px;
-    height: 39px;
-    background-color: red;
-    border-radius: 30px;
-    border: 2px solid gray;
-    margin: 50px;
+    float: right;
+    width: 45px;
+    height: 26px;
 }
 
-.toggle:after {
-    content: "";
+.unit-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
     position: absolute;
-    width: 37px;
-    height: 37px;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 26px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
     border-radius: 50%;
-    background-color: gray;
-    top: 1px;
-    left: 1px;
-    transition: all .5s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
 }
 
 p {
@@ -120,22 +158,33 @@ p {
     font-weight: bold;
 }
 
-#Fahrenheit {
-    left: 0px;
+.sidebar {
+    display: inline-block;
+    min-width: 175px;
+    max-width: 175px;
+    margin: 10px 10px auto 10px;
+    padding: 20px;
+    border-radius: 3px;
+    background-color: #5e81ac;
 }
 
-#Celsius {
-    left: 37px;
+.sidebar h2 {
+    margin: 0;
 }
 
-.checkbox:checked + .toggle::after {
-    left: 37px;
+.sidebar-container {
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
 }
 
-.checkbox:checked + .toggle {
-    background-color: green;
+.sidebar-label {
+    margin: 0 5px;
+    flex: 1 1 100%;
 }
 
-.checkbox {
-    display: none;
+.sidebar-element {
+    margin: 0 5px;
+    flex: 1 1 75%;
 }
