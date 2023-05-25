@@ -113,12 +113,11 @@ function changeTemp(){
     }
 }
 
-function getWeather(){
+async function getWeather(){
     let currentEpoch = Math.round((new Date()).getTime() / 1000.0);
     let forecastEpoch = currentEpoch + 259200;
     let currentEpochHour = currentEpoch - (currentEpoch % 3600);
     console.log("getWeather() called");
-    let xhr = new XMLHttpRequest();
     let city = sessionStorage.getItem("city");
     let state = sessionStorage.getItem("state");
     let country = sessionStorage.getItem("country");
@@ -135,20 +134,24 @@ function getWeather(){
 
     var apiFetch = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+ city + "," + state + "," + country + "/" + currentEpoch + "/" + forecastEpoch + "?&key=" + weatherAPIKey;
     console.log(apiFetch);
-    xhr.open('GET', apiFetch, true);
-    xhr.send();
 
-    xhr.onreadystatechange = e => {
-        if(xhr.readyState == 4 && xhr.status == 200){
-            let response = JSON.parse(xhr.responseText);
-            // Parse response for current temperature of the current hour
-            for(var i = 0; i < 24; i++){
-                if(response.days[0].hours[i].datetimeEpoch == currentEpochHour){
-                    sessionStorage.setItem("currentTemp", response.days[0].hours[i].temp); //Stored in F
-                }
-            }
+    try{
+        let res = await fetch(apiFetch);
+        let data = await res.json();
+
+        sessionStorage.setItem("weatherData", JSON.stringify(data));
+        console.log(JSON.parse(sessionStorage.weatherData));
+    }catch{
+        throw new Error("Error fetching from weather API");
+    }
+    
+    //Parse response for current temperature of the current hour
+    for(var i = 0; i < 24; i++){
+        if(JSON.parse(sessionStorage.weatherData).days[0].hours[i].datetimeEpoch == currentEpochHour){
+            sessionStorage.setItem("currentTemp", JSON.parse(sessionStorage.weatherData).days[0].hours[i].temp); //Stored in F
         }
     }
+
     console.log(sessionStorage.getItem("currentTemp"));
     changeTemp();
 }
