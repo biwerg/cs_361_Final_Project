@@ -2,6 +2,8 @@ var unitToggle = document.getElementById("unit-toggle");
 var themeToggle = document.getElementById("theme-toggle");
 var weatherAPIKey = "PPBWQVX6NDHXD76VNQLDDW3TA";
 var searchButton = document.getElementById("search-button");
+var currentLocation = document.getElementById("location");
+var searchInput = document.getElementById("search-bar");
 
 document.addEventListener("DOMContentLoaded", () =>{
     if(!sessionStorage.getItem("city")){
@@ -21,9 +23,11 @@ document.addEventListener("DOMContentLoaded", () =>{
                 if(xhr.readyState == 4 && xhr.status == 200){
                     let response = JSON.parse(xhr.responseText);
                     sessionStorage.setItem("city", response.address.city);
-                    sessionStorage.setItem("state", response.address.state);
+                    //See if state is available
+                    if(response.address.state){
+                        sessionStorage.setItem("state", response.address.state);
+                    }
                     sessionStorage.setItem("country", response.address.country);
-                    console.log(sessionStorage.getItem("city"));
                 }
             }
         }, error => {
@@ -42,28 +46,30 @@ document.addEventListener("DOMContentLoaded", () =>{
     if(!sessionStorage.getItem("units")){ //if units is not set, set to imperial
         sessionStorage.setItem("units", "imperial");
         unitToggle.checked = false;
-        console.log(sessionStorage.getItem("units"));
     }else{ //if units is set, load user settings
         if(sessionStorage.getItem("units") == "imperial"){
             unitToggle.checked = false;
         }else if (sessionStorage.getItem("units") == "metric"){
             unitToggle.checked = true;
         }
-        console.log(sessionStorage.getItem("units"));
     }
 
     if(!sessionStorage.getItem("theme")){ //if theme is not set, set to light
         sessionStorage.setItem("theme", "light");
         themeToggle.checked = false;
-        console.log(sessionStorage.getItem("theme"));
     }else{ //if units is set, load user settings
         if(sessionStorage.getItem("theme") == "light"){
             themeToggle.checked = false;
         }else if (sessionStorage.getItem("theme") == "dark"){
             themeToggle.checked = true;
         }
-        console.log(sessionStorage.getItem("theme"));
     }
+    if (!sessionStorage.getItem("state")){
+        sessionStorage.setItem("location", sessionStorage.getItem("city") + ", " + sessionStorage.getItem("country"));
+    }else{
+        sessionStorage.setItem("location", sessionStorage.getItem("city") + ", " + sessionStorage.getItem("state") + ", " + sessionStorage.getItem("country"));
+    }
+    console.log(sessionStorage.getItem("location"));
     getWeather();
     changeTheme();
     changeTemp();
@@ -72,10 +78,8 @@ document.addEventListener("DOMContentLoaded", () =>{
 unitToggle.addEventListener("click", () => { //update units
     if (unitToggle.checked){ //if checked, set to metric
         sessionStorage.setItem("units", "metric");
-        console.log(sessionStorage.getItem("units"));
     }else{ //if not checked, set to imperial
         sessionStorage.setItem("units", "imperial");
-        console.log(sessionStorage.getItem("units"));
     }
     changeTemp();
 });
@@ -83,10 +87,8 @@ unitToggle.addEventListener("click", () => { //update units
 themeToggle.addEventListener("click", () => {
     if (themeToggle.checked){
         sessionStorage.setItem("theme", "dark");
-        console.log(sessionStorage.getItem("theme"));
     }else{
         sessionStorage.setItem("theme", "light");
-        console.log(sessionStorage.getItem("theme"));
     }
     changeTheme();
 });
@@ -117,22 +119,13 @@ async function getWeather(){
     let currentEpoch = Math.round((new Date()).getTime() / 1000.0);
     let forecastEpoch = currentEpoch + 259200;
     let currentEpochHour = currentEpoch - (currentEpoch % 3600);
-    console.log("getWeather() called");
-    let city = sessionStorage.getItem("city");
-    let state = sessionStorage.getItem("state");
-    let country = sessionStorage.getItem("country");
+    let location = sessionStorage.getItem("location");
     //Remove all spaces from location
-    while(city.includes(" ")){
-        city = city.replace(" ", "");
-    }
-    while(state.includes(" ")){
-        state = state.replace(" ", "");
-    }
-    while(country.includes(" ")){
-        country = country.replace(" ", "");
+    while(location.includes(" ")){
+        location = location.replace(" ", "");
     }
 
-    var apiFetch = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+ city + "," + state + "," + country + "/" + currentEpoch + "/" + forecastEpoch + "?&key=" + weatherAPIKey;
+    var apiFetch = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+ location + "/" + currentEpoch + "/" + forecastEpoch + "?&key=" + weatherAPIKey;
     console.log(apiFetch);
 
     try{
@@ -152,10 +145,20 @@ async function getWeather(){
         }
     }
 
+    //Update location to resolved location
+    sessionStorage.setItem("location", JSON.parse(sessionStorage.weatherData).resolvedAddress);
     console.log(sessionStorage.getItem("currentTemp"));
     changeTemp();
+    changeLocation();
+}
+
+function changeLocation(){
+    document.getElementById("location").innerHTML = "Weather in " + sessionStorage.getItem("location");
 }
 
 searchButton.addEventListener("click", () => {
+    if (!(searchInput.value == "")){
+        sessionStorage.setItem("location", searchInput.value);
+    }
     getWeather();
 });
