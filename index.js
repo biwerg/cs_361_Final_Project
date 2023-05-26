@@ -120,6 +120,7 @@ async function getWeather(){
     let forecastEpoch = currentEpoch + 259200;
     let currentEpochHour = currentEpoch - (currentEpoch % 3600);
     let location = sessionStorage.getItem("location");
+    let locationFound = false;
     //Remove all spaces from location
     while(location.includes(" ")){
         location = location.replace(" ", "");
@@ -134,8 +135,10 @@ async function getWeather(){
 
         sessionStorage.setItem("weatherData", JSON.stringify(data));
         console.log(JSON.parse(sessionStorage.weatherData));
+        locationFound = true;
     }catch{
-        throw new Error("Error fetching from weather API");
+        alert("Location not found");
+        return;
     }
     
     //Parse response for current temperature of the current hour
