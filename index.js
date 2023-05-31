@@ -4,9 +4,25 @@ var weatherAPIKey = "PPBWQVX6NDHXD76VNQLDDW3TA";
 var searchButton = document.getElementById("search-button");
 var currentLocation = document.getElementById("location");
 var searchInput = document.getElementById("search-bar");
+var icon = document.getElementById("icon");
+var weatherDescription = document.getElementById("weather");
 
 document.addEventListener("DOMContentLoaded", () =>{
-    if(!sessionStorage.getItem("city")){
+    //Load user settings
+    if(!sessionStorage.getItem("units")){ //if units is not set, set to imperial
+        sessionStorage.setItem("units", "imperial");
+        unitToggle.checked = false;
+        changeTemp();
+    }else{ //if units is set, load user settings
+        if(sessionStorage.getItem("units") == "imperial"){
+            unitToggle.checked = false;
+        }else if (sessionStorage.getItem("units") == "metric"){
+            unitToggle.checked = true;
+        }
+        changeTemp();
+    }
+
+    if(!sessionStorage.getItem("location")){
         //gets coordinates of user
         navigator.geolocation.getCurrentPosition(position => {
             let xhr = new XMLHttpRequest();
@@ -18,16 +34,13 @@ document.addEventListener("DOMContentLoaded", () =>{
                 lat + "&lon=" + long + "&format=json", true);
             xhr.send();
 
-            //parse JSON response and update city
+            //parse JSON response and update location
             xhr.onreadystatechange = e => {
                 if(xhr.readyState == 4 && xhr.status == 200){
                     let response = JSON.parse(xhr.responseText);
-                    sessionStorage.setItem("city", response.address.city);
-                    //See if state is available
-                    if(response.address.state){
-                        sessionStorage.setItem("state", response.address.state);
-                    }
-                    sessionStorage.setItem("country", response.address.country);
+                    sessionStorage.setItem("location", response.address.city + ", " + response.address.state + ", " + response.address.country);
+                    console.log(sessionStorage.getItem("location"));
+                    getWeather();
                 }
             }
         }, error => {
@@ -37,42 +50,24 @@ document.addEventListener("DOMContentLoaded", () =>{
             timeout: 10000
         });
     }else{
-        console.log(sessionStorage.getItem("city"));
-        console.log(sessionStorage.getItem("state"));
-        console.log(sessionStorage.getItem("country"));
+        console.log(sessionStorage.getItem("location"));
+        getWeather();
     }
 
-    //Load user settings
-    if(!sessionStorage.getItem("units")){ //if units is not set, set to imperial
-        sessionStorage.setItem("units", "imperial");
-        unitToggle.checked = false;
-    }else{ //if units is set, load user settings
-        if(sessionStorage.getItem("units") == "imperial"){
-            unitToggle.checked = false;
-        }else if (sessionStorage.getItem("units") == "metric"){
-            unitToggle.checked = true;
-        }
-    }
+    
 
     if(!sessionStorage.getItem("theme")){ //if theme is not set, set to light
         sessionStorage.setItem("theme", "light");
         themeToggle.checked = false;
+        changeTheme();
     }else{ //if units is set, load user settings
         if(sessionStorage.getItem("theme") == "light"){
             themeToggle.checked = false;
         }else if (sessionStorage.getItem("theme") == "dark"){
             themeToggle.checked = true;
         }
+        changeTheme();
     }
-    if (!sessionStorage.getItem("state")){
-        sessionStorage.setItem("location", sessionStorage.getItem("city") + ", " + sessionStorage.getItem("country"));
-    }else{
-        sessionStorage.setItem("location", sessionStorage.getItem("city") + ", " + sessionStorage.getItem("state") + ", " + sessionStorage.getItem("country"));
-    }
-    console.log(sessionStorage.getItem("location"));
-    getWeather();
-    changeTheme();
-    changeTemp();
 });
 
 unitToggle.addEventListener("click", () => { //update units
@@ -110,8 +105,14 @@ function changeTheme(){
 function changeTemp(){
     if(sessionStorage.getItem("units") == "metric"){
         document.getElementById("temp").innerHTML = Math.round((sessionStorage.getItem("currentTemp") - 32) * (5/9)) + " °C";
+        document.getElementById("day1-temp").innerHTML = Math.round((sessionStorage.getItem("day1Temp") - 32) * (5/9)) + " °C";
+        document.getElementById("day2-temp").innerHTML = Math.round((sessionStorage.getItem("day2Temp") - 32) * (5/9)) + " °C";
+        document.getElementById("day3-temp").innerHTML = Math.round((sessionStorage.getItem("day3Temp") - 32) * (5/9)) + " °C";
     }else{
         document.getElementById("temp").innerHTML = Math.round(sessionStorage.getItem("currentTemp")) + " °F";
+        document.getElementById("day1-temp").innerHTML = Math.round(sessionStorage.getItem("day1Temp")) + " °F";
+        document.getElementById("day2-temp").innerHTML = Math.round(sessionStorage.getItem("day2Temp")) + " °F";
+        document.getElementById("day3-temp").innerHTML = Math.round(sessionStorage.getItem("day3Temp")) + " °F";
     }
 }
 
@@ -153,6 +154,7 @@ async function getWeather(){
     console.log(sessionStorage.getItem("currentTemp"));
     changeTemp();
     changeLocation();
+    changeIcon();
 }
 
 function changeLocation(){
@@ -165,3 +167,12 @@ searchButton.addEventListener("click", () => {
     }
     getWeather();
 });
+
+function changeIcon(){
+    let description = JSON.parse(sessionStorage.weatherData).days[0].icon;
+    while(description.includes("-")){
+        description = description.replace("-", " ");
+    }
+    weatherDescription.innerHTML = description;
+    icon.src = "icons/" + JSON.parse(sessionStorage.weatherData).days[0].icon + ".png";
+}
