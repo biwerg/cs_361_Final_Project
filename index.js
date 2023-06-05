@@ -9,20 +9,20 @@ var weatherDescription = document.getElementById("weather");
 
 document.addEventListener("DOMContentLoaded", () =>{
     //Load user settings
-    if(!sessionStorage.getItem("units")){ //if units is not set, set to imperial
-        sessionStorage.setItem("units", "imperial");
+    if(!localStorage.getItem("units")){ //if units is not set, set to imperial
+        localStorage.setItem("units", "imperial");
         unitToggle.checked = false;
         changeTemp();
     }else{ //if units is set, load user settings
-        if(sessionStorage.getItem("units") == "imperial"){
+        if(localStorage.getItem("units") == "imperial"){
             unitToggle.checked = false;
-        }else if (sessionStorage.getItem("units") == "metric"){
+        }else if (localStorage.getItem("units") == "metric"){
             unitToggle.checked = true;
         }
         changeTemp();
     }
 
-    if(!sessionStorage.getItem("location")){
+    if(!localStorage.getItem("location")){
         //gets coordinates of user
         navigator.geolocation.getCurrentPosition(position => {
             let xhr = new XMLHttpRequest();
@@ -38,8 +38,8 @@ document.addEventListener("DOMContentLoaded", () =>{
             xhr.onreadystatechange = e => {
                 if(xhr.readyState == 4 && xhr.status == 200){
                     let response = JSON.parse(xhr.responseText);
-                    sessionStorage.setItem("location", response.address.city + ", " + response.address.state + ", " + response.address.country);
-                    console.log(sessionStorage.getItem("location"));
+                    localStorage.setItem("location", response.address.city + ", " + response.address.state + ", " + response.address.country);
+                    console.log(localStorage.getItem("location"));
                     getWeather();
                 }
             }
@@ -50,20 +50,20 @@ document.addEventListener("DOMContentLoaded", () =>{
             timeout: 10000
         });
     }else{
-        console.log(sessionStorage.getItem("location"));
+        console.log(localStorage.getItem("location"));
         getWeather();
     }
 
     
 
-    if(!sessionStorage.getItem("theme")){ //if theme is not set, set to light
-        sessionStorage.setItem("theme", "light");
+    if(!localStorage.getItem("theme")){ //if theme is not set, set to light
+        localStorage.setItem("theme", "light");
         themeToggle.checked = false;
         changeTheme();
     }else{ //if units is set, load user settings
-        if(sessionStorage.getItem("theme") == "light"){
+        if(localStorage.getItem("theme") == "light"){
             themeToggle.checked = false;
-        }else if (sessionStorage.getItem("theme") == "dark"){
+        }else if (localStorage.getItem("theme") == "dark"){
             themeToggle.checked = true;
         }
         changeTheme();
@@ -72,24 +72,24 @@ document.addEventListener("DOMContentLoaded", () =>{
 
 unitToggle.addEventListener("click", () => { //update units
     if (unitToggle.checked){ //if checked, set to metric
-        sessionStorage.setItem("units", "metric");
+        localStorage.setItem("units", "metric");
     }else{ //if not checked, set to imperial
-        sessionStorage.setItem("units", "imperial");
+        localStorage.setItem("units", "imperial");
     }
     changeTemp();
 });
 
 themeToggle.addEventListener("click", () => {
     if (themeToggle.checked){
-        sessionStorage.setItem("theme", "dark");
+        localStorage.setItem("theme", "dark");
     }else{
-        sessionStorage.setItem("theme", "light");
+        localStorage.setItem("theme", "light");
     }
     changeTheme();
 });
 
 function changeTheme(){
-    if(sessionStorage.getItem("theme") == "dark"){
+    if(localStorage.getItem("theme") == "dark"){
         document.getElementById("body").style.backgroundColor = "#4c566a";
         document.getElementById("body").style.color = "#d8dee9";
         var siteTitle = document.getElementById("site-title");
@@ -103,16 +103,16 @@ function changeTheme(){
 }
 
 function changeTemp(){
-    if(sessionStorage.getItem("units") == "metric"){
-        document.getElementById("temp").innerHTML = Math.round((sessionStorage.getItem("currentTemp") - 32) * (5/9)) + " °C";
-        document.getElementById("day1-temp").innerHTML = Math.round((sessionStorage.getItem("day1Temp") - 32) * (5/9)) + " °C";
-        document.getElementById("day2-temp").innerHTML = Math.round((sessionStorage.getItem("day2Temp") - 32) * (5/9)) + " °C";
-        document.getElementById("day3-temp").innerHTML = Math.round((sessionStorage.getItem("day3Temp") - 32) * (5/9)) + " °C";
+    if(localStorage.getItem("units") == "metric"){
+        document.getElementById("temp").innerHTML = Math.round((localStorage.getItem("currentTemp") - 32) * (5/9)) + " °C";
+        document.getElementById("day1-temp").innerHTML = Math.round((localStorage.getItem("day1Temp") - 32) * (5/9)) + " °C";
+        document.getElementById("day2-temp").innerHTML = Math.round((localStorage.getItem("day2Temp") - 32) * (5/9)) + " °C";
+        document.getElementById("day3-temp").innerHTML = Math.round((localStorage.getItem("day3Temp") - 32) * (5/9)) + " °C";
     }else{
-        document.getElementById("temp").innerHTML = Math.round(sessionStorage.getItem("currentTemp")) + " °F";
-        document.getElementById("day1-temp").innerHTML = Math.round(sessionStorage.getItem("day1Temp")) + " °F";
-        document.getElementById("day2-temp").innerHTML = Math.round(sessionStorage.getItem("day2Temp")) + " °F";
-        document.getElementById("day3-temp").innerHTML = Math.round(sessionStorage.getItem("day3Temp")) + " °F";
+        document.getElementById("temp").innerHTML = Math.round(localStorage.getItem("currentTemp")) + " °F";
+        document.getElementById("day1-temp").innerHTML = Math.round(localStorage.getItem("day1Temp")) + " °F";
+        document.getElementById("day2-temp").innerHTML = Math.round(localStorage.getItem("day2Temp")) + " °F";
+        document.getElementById("day3-temp").innerHTML = Math.round(localStorage.getItem("day3Temp")) + " °F";
     }
 }
 
@@ -120,7 +120,7 @@ async function getWeather(){
     let currentEpoch = Math.round((new Date()).getTime() / 1000.0);
     let forecastEpoch = currentEpoch + 259200;
     let currentEpochHour = currentEpoch - (currentEpoch % 3600);
-    let location = sessionStorage.getItem("location");
+    let location = localStorage.getItem("location");
     let locationFound = false;
     //Remove all spaces from location
     while(location.includes(" ")){
@@ -134,8 +134,8 @@ async function getWeather(){
         let res = await fetch(apiFetch);
         let data = await res.json();
 
-        sessionStorage.setItem("weatherData", JSON.stringify(data));
-        console.log(JSON.parse(sessionStorage.weatherData));
+        localStorage.setItem("weatherData", JSON.stringify(data));
+        console.log(JSON.parse(localStorage.weatherData));
         locationFound = true;
     }catch{
         alert("Location not found");
@@ -144,35 +144,35 @@ async function getWeather(){
     
     //Parse response for current temperature of the current hour
     for(var i = 0; i < 24; i++){
-        if(JSON.parse(sessionStorage.weatherData).days[0].hours[i].datetimeEpoch == currentEpochHour){
-            sessionStorage.setItem("currentTemp", JSON.parse(sessionStorage.weatherData).days[0].hours[i].temp); //Stored in F
+        if(JSON.parse(localStorage.weatherData).days[0].hours[i].datetimeEpoch == currentEpochHour){
+            localStorage.setItem("currentTemp", JSON.parse(localStorage.weatherData).days[0].hours[i].temp); //Stored in F
         }
     }
 
     //Update location to resolved location
-    sessionStorage.setItem("location", JSON.parse(sessionStorage.weatherData).resolvedAddress);
-    console.log(sessionStorage.getItem("currentTemp"));
+    localStorage.setItem("location", JSON.parse(localStorage.weatherData).resolvedAddress);
+    console.log(localStorage.getItem("currentTemp"));
     changeTemp();
     changeLocation();
     changeIcon();
 }
 
 function changeLocation(){
-    document.getElementById("location").innerHTML = "Weather in " + sessionStorage.getItem("location");
+    document.getElementById("location").innerHTML = "Weather in " + localStorage.getItem("location");
 }
 
 searchButton.addEventListener("click", () => {
     if (!(searchInput.value == "")){
-        sessionStorage.setItem("location", searchInput.value);
+        localStorage.setItem("location", searchInput.value);
     }
     getWeather();
 });
 
 function changeIcon(){
-    let description = JSON.parse(sessionStorage.weatherData).days[0].icon;
+    let description = JSON.parse(localStorage.weatherData).days[0].icon;
     while(description.includes("-")){
         description = description.replace("-", " ");
     }
     weatherDescription.innerHTML = description;
-    icon.src = "icons/" + JSON.parse(sessionStorage.weatherData).days[0].icon + ".png";
+    icon.src = "icons/" + JSON.parse(localStorage.weatherData).days[0].icon + ".png";
 }
