@@ -8,19 +8,7 @@ var icon = document.getElementById("icon");
 var weatherDescription = document.getElementById("weather");
 
 document.addEventListener("DOMContentLoaded", () =>{
-    //Load user settings
-    if(!localStorage.getItem("units")){ //if units is not set, set to imperial
-        localStorage.setItem("units", "imperial");
-        unitToggle.checked = false;
-        changeTemp();
-    }else{ //if units is set, load user settings
-        if(localStorage.getItem("units") == "imperial"){
-            unitToggle.checked = false;
-        }else if (localStorage.getItem("units") == "metric"){
-            unitToggle.checked = true;
-        }
-        changeTemp();
-    }
+    
 
     if(!localStorage.getItem("location")){
         //gets coordinates of user
@@ -54,7 +42,19 @@ document.addEventListener("DOMContentLoaded", () =>{
         getWeather();
     }
 
-    
+    //Load user settings
+    if(!localStorage.getItem("units")){ //if units is not set, set to imperial
+        localStorage.setItem("units", "imperial");
+        unitToggle.checked = false;
+        changeTemp();
+    }else{ //if units is set, load user settings
+        if(localStorage.getItem("units") == "imperial"){
+            unitToggle.checked = false;
+        }else if (localStorage.getItem("units") == "metric"){
+            unitToggle.checked = true;
+        }
+        changeTemp();
+    }
 
     if(!localStorage.getItem("theme")){ //if theme is not set, set to light
         localStorage.setItem("theme", "light");
