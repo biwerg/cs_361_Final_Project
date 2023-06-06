@@ -42,6 +42,15 @@
                     </label>
                 </div>
             </div>
+
+            <div class="sidebar-container">
+                <label class="sidebar-label">Temperature</label>
+                <div class = "sidebar-element">
+                    <label class = "input-box">
+                        <input type = "text" id="temp-box" placeholder="°F"/>
+                    </label>
+                </div>
+            </div>
         </aside>
 
         <div class="display">
@@ -65,7 +74,7 @@
 
             <div class="weather-forecast-container">
                 <div class="weather-forecast-card">
-                    <h2 class = "forecast-day" id="day1-day"></h2>
+                    <h2 class = "forecast-day" id="day1-day">Mon</h2>
                     <h1 class = "forecast-temp" id="day1-temp">~°F</h1>
                     <div class = "flex">
                         <img src="" alt="Weather Icon" class = "forecast-icon" id="day1-icon">
@@ -74,24 +83,33 @@
                 </div>
                 
                 <div class="weather-forecast-card">
-                    <h2 class = "forecast-day" id="day2-day"></h2>
+                    <h2 class = "forecast-day" id="day2-day">Tue</h2>
                     <h1 class = "forecast-temp" id="day2-temp">~°F</h1>
                     <div class = "flex">
-                        <img src="" alt="Weather Icon" class = "forecast-icon" id="day1-icon">
+                        <img src="" alt="Weather Icon" class = "forecast-icon" id="day2-icon">
                         <h3 class = "forecast-weather" id="day2-weather">Cloudy</h3>
                     </div>
                 </div>
 
                 <div class="weather-forecast-card">
-                    <h2 class = "forecast-day" id="day3-day"></h2>
+                    <h2 class = "forecast-day" id="day3-day">Wed</h2>
                     <h1 class = "forecast-temp" id="day3-temp">~°F</h1>
                     <div class = "flex">
-                        <img src="" alt="Weather Icon" class = "forecast-icon" id="day1-icon">
+                        <img src="" alt="Weather Icon" class = "forecast-icon" id="day3-icon">
                         <h3 class = "forecast-weather" id="day3-weather">Cloudy</h3>
                     </div>
                 </div>
             </div>
         </div>
+
+        <aside class="sidebar">
+            <h2>Advisory</h2>
+            <div class="sidebar-container">
+                <label class="sidebar-label" id="advisory"></label>
+                <div class = "sidebar-element">
+                    <img src="" alt="Heat Advisory" id="advisory-icon">
+                </div>
+        </aside>
     </main>
 </body>
 </html>

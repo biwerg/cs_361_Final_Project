@@ -70,6 +70,20 @@ document.addEventListener("DOMContentLoaded", () =>{
     }
 });
 
+document.addEventListener("keyup", e => {
+    if(e.key == "Enter"){
+        let tempOverride = document.getElementById("temp-box");
+        if(tempOverride.value != ""){
+            localStorage.setItem("currentTemp", tempOverride.value);
+            tempOverride.value = "";
+            changeTemp();
+        }else{
+            searchButton.click();
+        }
+    }
+});
+
+
 unitToggle.addEventListener("click", () => { //update units
     if (unitToggle.checked){ //if checked, set to metric
         localStorage.setItem("units", "metric");
@@ -114,6 +128,7 @@ function changeTemp(){
         document.getElementById("day2-temp").innerHTML = Math.round(localStorage.getItem("day2Temp")) + " °F";
         document.getElementById("day3-temp").innerHTML = Math.round(localStorage.getItem("day3Temp")) + " °F";
     }
+    changeIcon();
 }
 
 async function getWeather(){
@@ -149,12 +164,16 @@ async function getWeather(){
         }
     }
 
+    //Parse response for temperature of the next 3 days
+    localStorage.setItem("day1Temp", JSON.parse(localStorage.weatherData).days[1].hours[12].temp); //Stored in F
+    localStorage.setItem("day2Temp", JSON.parse(localStorage.weatherData).days[2].hours[12].temp); //Stored in F
+    localStorage.setItem("day3Temp", JSON.parse(localStorage.weatherData).days[3].hours[12].temp); //Stored in F
+
     //Update location to resolved location
     localStorage.setItem("location", JSON.parse(localStorage.weatherData).resolvedAddress);
     console.log(localStorage.getItem("currentTemp"));
     changeTemp();
     changeLocation();
-    changeIcon();
 }
 
 function changeLocation(){
@@ -164,6 +183,7 @@ function changeLocation(){
 searchButton.addEventListener("click", () => {
     if (!(searchInput.value == "")){
         localStorage.setItem("location", searchInput.value);
+        searchInput.value = "";
     }
     getWeather();
 });
@@ -175,4 +195,92 @@ function changeIcon(){
     }
     weatherDescription.innerHTML = description;
     icon.src = "icons/" + JSON.parse(localStorage.weatherData).days[0].icon + ".png";
+
+    let day1Description = JSON.parse(localStorage.weatherData).days[1].icon;
+    while(day1Description.includes("-")){
+        day1Description = day1Description.replace("-", " ");
+    }
+    document.getElementById("day1-weather").innerHTML = day1Description;
+    document.getElementById("day1-icon").src = "icons/" + JSON.parse(localStorage.weatherData).days[1].icon + ".png";
+
+    let day2Description = JSON.parse(localStorage.weatherData).days[2].icon;
+    while(day2Description.includes("-")){
+        day2Description = day2Description.replace("-", " ");
+    }
+    document.getElementById("day2-weather").innerHTML = day2Description;
+    document.getElementById("day2-icon").src = "icons/" + JSON.parse(localStorage.weatherData).days[2].icon + ".png";
+
+    let day3Description = JSON.parse(localStorage.weatherData).days[3].icon;
+    while(day3Description.includes("-")){
+        day3Description = day3Description.replace("-", " ");
+    }
+    document.getElementById("day3-weather").innerHTML = day3Description;
+    document.getElementById("day3-icon").src = "icons/" + JSON.parse(localStorage.weatherData).days[3].icon + ".png";
+
+    changeDay();
+    changeAdvisory();
+}
+
+function changeDay(){
+    let day = new Date().getDay();
+    console.log(day);
+    let day1 = document.getElementById("day1-day");
+    let day2 = document.getElementById("day2-day");
+    let day3 = document.getElementById("day3-day");
+
+    switch(day){
+        case 0:
+            day1.innerHTML = "Monday";
+            day2.innerHTML = "Tuesday";
+            day3.innerHTML = "Wednesday";
+            break;
+        case 1:
+            day1.innerHTML = "Tuesday";
+            day2.innerHTML = "Wednesday";
+            day3.innerHTML = "Thursday";
+            break;
+        case 2:
+            day1.innerHTML = "Wednesday";
+            day2.innerHTML = "Thursday";
+            day3.innerHTML = "Friday";
+            break;
+        case 3:
+            day1.innerHTML = "Thursday";
+            day2.innerHTML = "Friday";
+            day3.innerHTML = "Saturday";
+            break;
+        case 4:
+            day1.innerHTML = "Friday";
+            day2.innerHTML = "Saturday";
+            day3.innerHTML = "Sunday";
+            break;
+        case 5:
+            day1.innerHTML = "Saturday";
+            day2.innerHTML = "Sunday";
+            day3.innerHTML = "Monday";
+            break;
+        case 6:
+            day1.innerHTML = "Sunday";
+            day2.innerHTML = "Monday";
+            day3.innerHTML = "Tuesday";
+            break;
+    }
+}
+
+function changeAdvisory(){
+    let advisory = document.getElementById("advisory");
+    let advisoryIcon = document.getElementById("advisory-icon");
+
+    if(localStorage.getItem("currentTemp") > 90){
+        advisory.innerHTML = "Heat Advisory";
+        advisoryIcon.src = "advisory/heat.jpg";
+    }
+    else if(localStorage.getItem("currentTemp") < 32){
+        advisory.innerHTML = "Freeze Advisory";
+        advisoryIcon.src = "advisory/freeze.jpg";
+    }
+    else{
+        advisory.innerHTML = "No Advisory";
+        advisoryIcon.src = "advisory/temp.jpg";
+    }
 }
